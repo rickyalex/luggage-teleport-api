@@ -20,6 +20,18 @@ service: luggage-teleport-api
 provider:
   name: aws
   runtime: nodejs6.10
+  #environment:
+  #  table: ${self:service}-${opt:stage, self:provider.stage}
+  #iamRoleStatements:
+  # - Effect: Allow
+  #    Action:
+  #      - dynamodb:Query
+  #      - dynamodb:Scan
+  #      - dynamodb:GetItem
+  #      - dynamodb:PutItem
+  #      - dynamodb:UpdateItem
+  #      - dynamodb:DeleteItem
+  #    Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME}"
 
 # you can overwrite defaults here
 #  stage: dev
@@ -55,12 +67,30 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  readAllAirport:
-    handler: handler/readAllAirport.readAllAirport
+  booking-create:
+    handler: handler/booking.create
     events:
       - http:
-          path: handler/readAllAirport
+          path: handler/booking-create
+          method: post
+    environment:
+      TABLE_NAME: booking
+  booking-update:
+    handler: handler/booking.update
+    events:
+      - http:
+          path: handler/booking-update/{id}
+          method: put
+    environment:
+      TABLE_NAME: booking
+  booking-scan:
+    handler: handler/booking.scan
+    events:
+      - http:
+          path: handler/booking-scan
           method: get
+    environment:
+      TABLE_NAME: booking
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
