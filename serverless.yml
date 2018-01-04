@@ -20,8 +20,32 @@ service: luggage-teleport-api
 provider:
   name: aws
   runtime: nodejs6.10
-  #environment:
-  #  table: ${self:service}-${opt:stage, self:provider.stage}
+  region: us-west-1
+  environment:
+    TABLE_NAME: "AirportToHotel"
+    TABLE_NAME2: "HotelToAirport"
+    TABLE_INDEX_NAME: email
+    TABLE_INDEX_NAME2: email
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME}/index/${self:provider.environment.TABLE_INDEX_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME2}/index/${self:provider.environment.TABLE_INDEX_NAME2}"
+        #  table: ${self:service}-${opt:stage, self:provider.stage}
   #iamRoleStatements:
   # - Effect: Allow
   #    Action:
@@ -67,30 +91,224 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  booking-create:
-    handler: handler/booking.create
+  AirportToHotel-create:
+    handler: handler/AirportToHotel.create
     events:
       - http:
-          path: handler/booking-create
+          path: handler/AirportToHotel-create
           method: post
+          cors: true
     environment:
-      TABLE_NAME: booking
-  booking-update:
-    handler: handler/booking.update
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  AirportToHotel-update:
+    handler: handler/AirportToHotel.update
     events:
       - http:
-          path: handler/booking-update/{id}
+          path: handler/AirportToHotel-update/{id}
           method: put
+          cors: true
     environment:
-      TABLE_NAME: booking
-  booking-scan:
-    handler: handler/booking.scan
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  AirportToHotel-scan:
+    handler: handler/AirportToHotel.scan
     events:
       - http:
-          path: handler/booking-scan
+          path: handler/AirportToHotel-scan
           method: get
+          cors: true
     environment:
-      TABLE_NAME: booking
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  AirportToHotel-get:
+    handler: handler/AirportToHotel.get
+    events:
+      - http:
+          path: handler/AirportToHotel-get/{email}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  HotelToAirport-create:
+    handler: handler/HotelToAirport.create
+    events:
+      - http:
+          path: handler/HotelToAirport-create
+          method: post
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
+  HotelToAirport-update:
+    handler: handler/HotelToAirport.update
+    events:
+      - http:
+          path: handler/HotelToAirport-update/{id}
+          method: put
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
+  HotelToAirport-scan:
+    handler: handler/HotelToAirport.scan
+    events:
+      - http:
+          path: handler/HotelToAirport-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
+  HotelToAirport-get:
+    handler: handler/HotelToAirport.get
+    events:
+      - http:
+          path: handler/HotelToAirport-get/{email}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
+resources:
+  Resources:
+    AirportToHotelDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        - 
+          AttributeName: airport
+          AttributeType: S
+        - 
+          AttributeName: airline
+          AttributeType: S
+        - 
+          AttributeName: flightNumber
+          AttributeType: S
+        - 
+          AttributeName: pickupDate
+          AttributeType: S
+        - 
+          AttributeName: estimatedArrival
+          AttributeType: S
+        - 
+          AttributeName: hotel
+          AttributeType: S
+        - 
+          AttributeName: hotelReference
+          AttributeType: S
+        - 
+          AttributeName: hotelReservationName
+          AttributeType: S
+        - 
+          AttributeName: overnight
+          AttributeType: S
+        - 
+          AttributeName: overnightDropoffdate
+          AttributeType: S
+        - 
+          AttributeName: status
+          AttributeType: S
+        - 
+          AttributeName: createdAt
+          AttributeType: S
+        - 
+          AttributeName: email
+          AttributeType: S
+        - 
+          AttributeName: phone
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME}
+        GlobalSecondaryIndexes:
+        - IndexName: email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    HotelToAirportDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        - 
+          AttributeName: airport
+          AttributeType: S
+        - 
+          AttributeName: airline
+          AttributeType: S
+        - 
+          AttributeName: flightNumber
+          AttributeType: S
+        - 
+          AttributeName: pickupDate
+          AttributeType: S
+        - 
+          AttributeName: departureTime
+          AttributeType: S
+        - 
+          AttributeName: hotel
+          AttributeType: S
+        - 
+          AttributeName: hotelReference
+          AttributeType: S
+        - 
+          AttributeName: hotelReservationName
+          AttributeType: S
+        - 
+          AttributeName: status
+          AttributeType: S
+        - 
+          AttributeName: createdAt
+          AttributeType: S
+        - 
+          AttributeName: email
+          AttributeType: S
+        - 
+          AttributeName: phone
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME2}
+        GlobalSecondaryIndexes:
+        - IndexName: email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

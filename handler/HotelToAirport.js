@@ -10,20 +10,17 @@ module.exports.create = (event, context, callback) => {
   const data = JSON.parse(event.body);
 
    const params = {
-     TableName: process.env.TABLE_NAME,
+     TableName: process.env.TABLE_NAME2,
      Item: {
        id: uuid.v1(),
-       type: "Airport to Hotel",
        airport: data.airport,
        airline: data.airline,
        flightNumber: data.flightNumber,
        pickupDate: data.pickupDate,
-       estimatedArrival: data.estimatedArrival,
+       departureTime: data.estimatedArrival,
        hotel: data.hotel,
        hotelReference: data.hotelReference,
        hotelReservationName: data.hotelReservationName,
-       overnight: data.overnight,
-       overnightDropoffdate: data.overnightDropoffdate,
        status: "Awaiting Payment",
        createdAt: timestamp,
        email: data.email,
@@ -75,7 +72,7 @@ module.exports.update = (event, context, callback) => {
   }
 
   const params = {
-    TableName: process.env.TABLE_NAME,
+    TableName: process.env.TABLE_NAME2,
     Key: {
       id: event.pathParameters.id,
     },
@@ -118,7 +115,7 @@ module.exports.update = (event, context, callback) => {
 module.exports.scan = (event, context, callback) => {
 
   var params = {
-      TableName : process.env.TABLE_NAME,
+      TableName : process.env.TABLE_NAME2,
     };
     dynamoDb.scan(params, function(err, data){
       if(err){
@@ -143,7 +140,7 @@ module.exports.scan = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
 
   var params = {
-    TableName: process.env.TABLE_NAME,
+    TableName: process.env.TABLE_NAME2,
     IndexName : 'email',
     KeyConditionExpression: "email = :e",
     ExpressionAttributeValues: {
