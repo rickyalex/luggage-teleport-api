@@ -24,7 +24,10 @@ module.exports.create = (event, context, callback) => {
        status: "Awaiting Payment",
        createdAt: timestamp,
        email: data.email,
-       phone: data.phone
+       phone: data.phone,
+       PaymentWith: data.PaymentWith,
+       LuggageQuantity: data.LuggageQuantity,
+       TotalCost: data.TotalCost
      },
    };
 

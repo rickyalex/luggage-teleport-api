@@ -182,46 +182,7 @@ resources:
           AttributeName: id
           AttributeType: S
         - 
-          AttributeName: airport
-          AttributeType: S
-        - 
-          AttributeName: airline
-          AttributeType: S
-        - 
-          AttributeName: flightNumber
-          AttributeType: S
-        - 
-          AttributeName: pickupDate
-          AttributeType: S
-        - 
-          AttributeName: estimatedArrival
-          AttributeType: S
-        - 
-          AttributeName: hotel
-          AttributeType: S
-        - 
-          AttributeName: hotelReference
-          AttributeType: S
-        - 
-          AttributeName: hotelReservationName
-          AttributeType: S
-        - 
-          AttributeName: overnight
-          AttributeType: S
-        - 
-          AttributeName: overnightDropoffdate
-          AttributeType: S
-        - 
-          AttributeName: status
-          AttributeType: S
-        - 
-          AttributeName: createdAt
-          AttributeType: S
-        - 
           AttributeName: email
-          AttributeType: S
-        - 
-          AttributeName: phone
           AttributeType: S
         KeySchema:
           -
@@ -241,6 +202,8 @@ resources:
           #     - user_id
           #     - user_organization_id
           #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
@@ -253,40 +216,7 @@ resources:
           AttributeName: id
           AttributeType: S
         - 
-          AttributeName: airport
-          AttributeType: S
-        - 
-          AttributeName: airline
-          AttributeType: S
-        - 
-          AttributeName: flightNumber
-          AttributeType: S
-        - 
-          AttributeName: pickupDate
-          AttributeType: S
-        - 
-          AttributeName: departureTime
-          AttributeType: S
-        - 
-          AttributeName: hotel
-          AttributeType: S
-        - 
-          AttributeName: hotelReference
-          AttributeType: S
-        - 
-          AttributeName: hotelReservationName
-          AttributeType: S
-        - 
-          AttributeName: status
-          AttributeType: S
-        - 
-          AttributeName: createdAt
-          AttributeType: S
-        - 
           AttributeName: email
-          AttributeType: S
-        - 
-          AttributeName: phone
           AttributeType: S
         KeySchema:
           -
@@ -306,6 +236,8 @@ resources:
           #     - user_id
           #     - user_organization_id
           #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1

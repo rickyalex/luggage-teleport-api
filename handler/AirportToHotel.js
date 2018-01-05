@@ -13,7 +13,6 @@ module.exports.create = (event, context, callback) => {
      TableName: process.env.TABLE_NAME,
      Item: {
        id: uuid.v1(),
-       type: "Airport to Hotel",
        airport: data.airport,
        airline: data.airline,
        flightNumber: data.flightNumber,
@@ -22,12 +21,14 @@ module.exports.create = (event, context, callback) => {
        hotel: data.hotel,
        hotelReference: data.hotelReference,
        hotelReservationName: data.hotelReservationName,
-       overnight: data.overnight,
-       overnightDropoffdate: data.overnightDropoffdate,
+       dropoffDate: data.dropoffDate,
        status: "Awaiting Payment",
        createdAt: timestamp,
        email: data.email,
-       phone: data.phone
+       phone: data.phone,
+       PaymentWith: data.PaymentWith,
+       LuggageQuantity: data.LuggageQuantity,
+       TotalCost: data.TotalCost
      },
    };
 
