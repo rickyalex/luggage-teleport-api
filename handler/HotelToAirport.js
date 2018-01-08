@@ -4,56 +4,70 @@ const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-depe
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const uuid = require('node-uuid');
+const squareAPI = require('./square');
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
-
-   const params = {
-     TableName: process.env.TABLE_NAME2,
-     Item: {
-       id: uuid.v1(),
-       airport: data.airport,
-       airline: data.airline,
-       flightNumber: data.flightNumber,
-       pickupDate: data.pickupDate,
-       departureTime: data.estimatedArrival,
-       hotel: data.hotel,
-       hotelReference: data.hotelReference,
-       hotelReservationName: data.hotelReservationName,
-       status: "Awaiting Payment",
-       createdAt: timestamp,
-       email: data.email,
-       phone: data.phone,
-       PaymentWith: data.PaymentWith,
-       LuggageQuantity: data.LuggageQuantity,
-       TotalCost: data.TotalCost
-     },
-   };
-
-  dynamoDb.put(params, (error) => {
-    if (error) {
-      console.error(error);
+  squareAPI.squareCharge(data, function(resp) {
+    if (resp.body.errors){
+      console.error(resp.body.errors);
       callback(null, {
         statusCode: error.statusCode || 501,
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin' : '*' 
-        }, 
-        body: 'Couldn\'t create the booking.',
-      });
-      return;
-    }
-
-    const response = {
-      statusCode: 200,
-      body: JSON.stringify(params.Item),
-      headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin' : '*' 
+          'Access-Control-Allow-Origin' : '*'
         },
-    };
-    callback(null, response);
+        body: 'Couldn\'t charge the booking.',
+      });
+    } else {
+      const params = {
+        TableName: process.env.TABLE_NAME2,
+        Item: {
+          id: uuid.v1(),
+          airport: data.airport,
+          airline: data.airline,
+          flightNumber: data.flightNumber,
+          pickupDate: data.pickupDate,
+          departureTime: data.estimatedArrival,
+          hotel: data.hotel,
+          hotelReference: data.hotelReference,
+          hotelReservationName: data.hotelReservationName,
+          status: "Awaiting Payment",
+          createdAt: timestamp,
+          email: data.email,
+          phone: data.phone,
+          PaymentWith: data.PaymentWith,
+          LuggageQuantity: data.LuggageQuantity,
+          TotalCost: data.TotalCost
+        },
+      };
+
+      dynamoDb.put(params, (error) => {
+        if (error) {
+          console.error(error);
+          callback(null, {
+            statusCode: error.statusCode || 501,
+            headers: {
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin': '*'
+            },
+            body: 'Couldn\'t create the booking.',
+          });
+          return;
+        }
+
+        const response = {
+          statusCode: 200,
+          body: JSON.stringify(params.Item),
+          headers: {
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*'
+          },
+        };
+        callback(null, response);
+      });
+    }
   });
 };
 
