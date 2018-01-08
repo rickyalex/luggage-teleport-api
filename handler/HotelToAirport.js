@@ -39,7 +39,8 @@ module.exports.create = (event, context, callback) => {
           phone: data.phone,
           PaymentWith: data.PaymentWith,
           LuggageQuantity: data.LuggageQuantity,
-          TotalCost: data.TotalCost
+          TotalCost: data.TotalCost,
+          transaction: resp.body.transaction.id
         },
       };
 
