@@ -13,7 +13,7 @@ module.exports.create = (event, context, callback) => {
     if (resp.body.errors){
       console.error(resp.body.errors);
       callback(null, {
-        statusCode: error.statusCode || 501,
+        statusCode: resp.body.errors.statusCode || 501,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*'

@@ -26,6 +26,8 @@ provider:
     TABLE_NAME2: "HotelToAirport"
     TABLE_INDEX_NAME: email
     TABLE_INDEX_NAME2: email
+    LOCATION_ID: CBASELIyzGkpDOKCuGjE8t_TEUIgAQ
+    SQUARE_ACCESS_TOKEN: sandbox-sq0atb-ySY-e03n80FFdnAB1H0Q8Q
   iamRoleStatements:
     - Effect: Allow
       Action:
