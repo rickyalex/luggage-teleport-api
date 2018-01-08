@@ -16,7 +16,7 @@ module.exports.create = (event, context, callback) => {
   var request_body = {
     card_nonce: data.cardNonce,
     amount_money: {
-      amount: data.TotalCost,
+      amount: data.TotalCost * 100,
       currency: 'USD'
     },
     idempotency_key: token
