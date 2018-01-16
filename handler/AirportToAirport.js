@@ -44,26 +44,26 @@ module.exports.create = (event, context, callback) => {
     } else {
 
       const params = {
-        TableName: process.env.TABLE_NAME,
+        TableName: process.env.TABLE_NAME3,
         Item: {
-          id: uuid.v1(),
-          airport: data.airport,
-          airline: data.airline,
-          flightNumber: data.flightNumber,
-          pickupDate: data.pickupDate,
-          estimatedArrival: data.estimatedArrival,
-          hotel: data.hotel,
-          hotelReference: data.hotelReference,
-          hotelReservationName: data.hotelReservationName,
-          dropoffDate: data.dropoffDate,
-          status: "Awaiting Payment",
-          createdAt: timestamp,
-          email: data.email,
-          phone: data.phone,
-          PaymentWith: data.PaymentWith,
-          LuggageQuantity: data.LuggageQuantity,
-          TotalCost: data.TotalCost,
-          transaction: resp.body.transaction.id
+            id: uuid.v1(),
+            AirlineDropoff: data.AirlineDropoff,
+            AirlinePickup: data.AirlinePickup, 
+            AirportDropoff: data.AirportDropoff,
+            AirportPickup: data.AirportPickup, 
+            ArrivalTime: data.ArrivalTime, 
+            DepartureTime: data.DepartureTime,
+            DropoffFlightNumber: data.DropoffFlightNumber,
+            PickupFlightNumber: data.PickupFlightNumber,
+            email: data.email,
+            PhoneNumber: data.PhoneNumber,
+            PickupDate: data.PickupDate,
+            status: "Awaiting Payment",
+            createdAt: timestamp,
+            PaymentWith: data.PaymentWith,
+            LuggageQuantity: data.LuggageQuantity,
+            TotalCost: data.TotalCost,
+            transaction: resp.body.transaction.id
         },
       };
 
@@ -113,7 +113,7 @@ module.exports.update = (event, context, callback) => {
   }
 
   const params = {
-    TableName: process.env.TABLE_NAME,
+    TableName: process.env.TABLE_NAME3,
     Key: {
       id: event.pathParameters.id,
     },
@@ -156,7 +156,7 @@ module.exports.update = (event, context, callback) => {
 module.exports.scan = (event, context, callback) => {
 
   var params = {
-      TableName : process.env.TABLE_NAME,
+      TableName : process.env.TABLE_NAME3,
     };
     dynamoDb.scan(params, function(err, data){
       if(err){
@@ -181,7 +181,7 @@ module.exports.scan = (event, context, callback) => {
 module.exports.get = (event, context, callback) => {
 
   var params = {
-    TableName: process.env.TABLE_NAME,
+    TableName: process.env.TABLE_NAME3,
     IndexName : 'email',
     KeyConditionExpression: "email = :e",
     ExpressionAttributeValues: {

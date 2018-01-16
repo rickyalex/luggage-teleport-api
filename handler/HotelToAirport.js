@@ -4,16 +4,37 @@ const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-depe
 
 const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const uuid = require('node-uuid');
-const squareAPI = require('./square');
+var unirest = require('unirest');
+var base_url = 'https://connect.squareup.com/v2';
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
-  squareAPI.squareCharge(data, function(resp) {
+  var token = require('crypto').randomBytes(64).toString('hex');
+
+  var request_body = {
+    card_nonce: data.cardNonce,
+    amount_money: {
+      amount: data.TotalCost * 100,
+      currency: 'USD'
+    },
+    idempotency_key: token
+  }
+
+  var locationId = process.env.LOCATION_ID;
+
+  unirest.post(base_url + '/locations/' + locationId + "/transactions")
+    .headers({
+      'Authorization': 'Bearer ' + process.env.SQUARE_ACCESS_TOKEN,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    })
+    .send(request_body)
+    .end((resp) => {
     if (resp.body.errors){
       console.error(resp.body.errors);
       callback(null, {
-        statusCode: error.statusCode || 501,
+        statusCode: resp.body.errors.statusCode || 501,
         headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*'
@@ -21,6 +42,7 @@ module.exports.create = (event, context, callback) => {
         body: 'Couldn\'t charge the booking.',
       });
     } else {
+
       const params = {
         TableName: process.env.TABLE_NAME2,
         Item: {

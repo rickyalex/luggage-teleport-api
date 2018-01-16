@@ -1,0 +1,156 @@
+{
+    "Hotel": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "51"},
+                    "name": {"S": "The Resort at Summerlin"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "52"},
+                    "name": {"S": "Resorts World"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "53"},
+                    "name": {"S": "Rio Suite Hotel"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "54"},
+                    "name": {"S": "Riviera"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "55"},
+                    "name": {"S": "Sam’s Town"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "56"},
+                    "name": {"S": "SLS"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "57"},
+                    "name": {"S": "Stratosphere"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "58"},
+                    "name": {"S": "St. Tropez"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "59"},
+                    "name": {"S": "Suncoast Casino Hotel"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "60"},
+                    "name": {"S": "Sunset Station"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "61"},
+                    "name": {"S": "Treasure Island"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "62"},
+                    "name": {"S": "Tropicana"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "63"},
+                    "name": {"S": "Tuscany Hotel & Casino"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "64"},
+                    "name": {"S": "The Venetian"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "65"},
+                    "name": {"S": "Western Hotel"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "66"},
+                    "name": {"S": "Westgate Las Vegas Resort & Casino"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "67"},
+                    "name": {"S": "The Westin Casuarina"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "68"},
+                    "name": {"S": "Wild Wild West Hotel"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "69"},
+                    "name": {"S": "Wynn Las Vegas"}
+                }
+            }
+        }
+    ]
+}

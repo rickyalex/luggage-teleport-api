@@ -24,10 +24,16 @@ provider:
   environment:
     TABLE_NAME: "AirportToHotel"
     TABLE_NAME2: "HotelToAirport"
+    TABLE_NAME3: "AirportToAirport"
+    TABLE_NAME4: "HotelToHotel"
+    TABLE_NAME5: "Airport"
+    TABLE_NAME6: "Hotel"
+    TABLE_NAME7: "Airline"
     TABLE_INDEX_NAME: email
-    TABLE_INDEX_NAME2: email
-    LOCATION_ID: CBASELIyzGkpDOKCuGjE8t_TEUIgAQ
-    SQUARE_ACCESS_TOKEN: sandbox-sq0atb-ySY-e03n80FFdnAB1H0Q8Q
+    LOCATION_ID: CBASELIyzGkpDOKCuGjE8t_TEUIgAQ #sandbox
+    #LOCATION_ID: 0TZ5YHB79RBF8 #production
+    SQUARE_ACCESS_TOKEN: sandbox-sq0atb-ySY-e03n80FFdnAB1H0Q8Q #sandbox
+    #SQUARE_ACCESS_TOKEN: sq0atp-sntyXx6MiEPIHEdWm59hVA #production
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -46,7 +52,52 @@ provider:
         - dynamodb:PutItem
         - dynamodb:UpdateItem
         - dynamodb:DeleteItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME2}/index/${self:provider.environment.TABLE_INDEX_NAME2}"
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME2}/index/${self:provider.environment.TABLE_INDEX_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME3}/index/${self:provider.environment.TABLE_INDEX_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME4}/index/${self:provider.environment.TABLE_INDEX_NAME}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME5}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME6}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME7}"
         #  table: ${self:service}-${opt:stage, self:provider.stage}
   #iamRoleStatements:
   # - Effect: Allow
@@ -173,6 +224,148 @@ functions:
                url: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
+  AirportToAirport-create:
+    handler: handler/AirportToAirport.create
+    events:
+      - http:
+          path: handler/AirportToAirport-create
+          method: post
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
+  AirportToAirport-update:
+    handler: handler/AirportToAirport.update
+    events:
+      - http:
+          path: handler/AirportToAirport-update/{id}
+          method: put
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
+  AirportToAirport-scan:
+    handler: handler/AirportToAirport.scan
+    events:
+      - http:
+          path: handler/AirportToAirport-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
+  AirportToAirport-get:
+    handler: handler/AirportToAirport.get
+    events:
+      - http:
+          path: handler/AirportToAirport-get/{email}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
+  HotelToHotel-create:
+    handler: handler/HotelToHotel.create
+    events:
+      - http:
+          path: handler/HotelToHotel-create
+          method: post
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
+  HotelToHotel-update:
+    handler: handler/HotelToHotel.update
+    events:
+      - http:
+          path: handler/HotelToHotel-update/{id}
+          method: put
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
+  HotelToHotel-scan:
+    handler: handler/HotelToHotel.scan
+    events:
+      - http:
+          path: handler/HotelToHotel-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
+  HotelToHotel-get:
+    handler: handler/HotelToHotel.get
+    events:
+      - http:
+          path: handler/HotelToHotel-get/{email}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
+  Airport-scan:
+    handler: handler/Airport.scan
+    events:
+      - http:
+          path: handler/Airport-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME5}
+  Airport-get:
+    handler: handler/Airport.get
+    events:
+      - http:
+          path: handler/Airport-get/{id}
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME5}
+  Hotel-scan:
+    handler: handler/Hotel.scan
+    events:
+      - http:
+          path: handler/Hotel-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
+  Hotel-get:
+    handler: handler/Hotel.get
+    events:
+      - http:
+          path: handler/Hotel-get/{id}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
+  Airline-scan:
+    handler: handler/Airline.scan
+    events:
+      - http:
+          path: handler/Airline-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME7}
+  Airline-get:
+    handler: handler/Airline.get
+    events:
+      - http:
+          path: handler/Airline-get/{id}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME7}
 resources:
   Resources:
     AirportToHotelDynamoDbTable:
@@ -243,6 +436,122 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
+    AirportToAirportDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        - 
+          AttributeName: email
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME3}
+        GlobalSecondaryIndexes:
+        - IndexName: email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    HotelToHotelDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        - 
+          AttributeName: email
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME4}
+        GlobalSecondaryIndexes:
+        - IndexName: email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
+    AirportDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME5}
+    HotelDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME6}
+    AirlineDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME7}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
