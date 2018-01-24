@@ -34,6 +34,7 @@ provider:
     #LOCATION_ID: 0TZ5YHB79RBF8 #production
     SQUARE_ACCESS_TOKEN: sandbox-sq0atb-ySY-e03n80FFdnAB1H0Q8Q #sandbox
     #SQUARE_ACCESS_TOKEN: sq0atp-sntyXx6MiEPIHEdWm59hVA #production
+    SENDGRID_API_KEY: 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
   iamRoleStatements:
     - Effect: Allow
       Action:

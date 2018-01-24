@@ -6,6 +6,7 @@ const dynamoDb = new AWS.DynamoDB.DocumentClient();
 const uuid = require('node-uuid');
 var unirest = require('unirest');
 var base_url = 'https://connect.squareup.com/v2';
+const sgMail = require('@sendgrid/mail');
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
@@ -47,6 +48,7 @@ module.exports.create = (event, context, callback) => {
         TableName: process.env.TABLE_NAME,
         Item: {
           id: uuid.v1(),
+          BookingId: data.BookingId,
           airport: data.airport,
           airline: data.airline,
           flightNumber: data.flightNumber,
@@ -81,6 +83,33 @@ module.exports.create = (event, context, callback) => {
           return;
         }
 
+        sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+        const msg = {
+          to: params.Item.email,
+          from: 'no-reply@luggageteleport.com',
+          bcc: 'rickyalex88@gmail.com',
+          subject: 'Luggage Teleport Receipt',
+          text: params.Item.BookingId,
+          html: '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame01.png"  width="377" height="auto"/>'+'<br><br>'+
+                '<strong>Thank You for booking with us !</strong>'+'<br><br>'+
+                'Your Booking ID : '+params.Item.BookingId+'<br>'+
+                'Booking : Airport to Hotel<br>'+
+                'Email : '+params.Item.email+'<br>'+
+                'Phone Number : '+params.Item.phone+'<br>'+
+                'Number of bags : '+params.Item.LuggageQuantity+'<br>'+
+                'Price : $'+params.Item.TotalCost+'<br>'+
+                '<strong>Pick Up Point </strong>'+'<br>'+
+                'Pickup Airport : '+params.Item.airport+'<br>'+
+                'Airline : '+params.Item.airline+'<br>'+
+                'Flight Number : '+params.Item.flightNumber+'<br>'+
+                '<strong>Drop Off Point </strong>'+'<br>'+
+                'Dropoff Hotel : '+params.Item.hotel+'<br>'+
+                'Hotel Reference : '+params.Item.hotelReference+'<br>'+
+                'Guest Name: '+params.Item.hotelReservationName+'<br><br>'+
+                '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame02.png"  width="377" height="auto"/>'
+        };
+        sgMail.send(msg);
+
         const response = {
           statusCode: 200,
           body: JSON.stringify(params.Item),
@@ -90,6 +119,8 @@ module.exports.create = (event, context, callback) => {
           },
         };
         callback(null, response);
+
+
       });
     }
   });
