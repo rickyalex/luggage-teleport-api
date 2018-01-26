@@ -5,3 +5,9 @@ jspm_packages
 # Serverless directories
 .serverless
 .idea/
+
+# api key file
+apikeys.js
+
+# yml file
+serverless.yml
