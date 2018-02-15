@@ -53,7 +53,7 @@ module.exports.create = (event, context, callback) => {
           airline: data.airline,
           flightNumber: data.flightNumber,
           pickupDate: data.pickupDate,
-          departureTime: data.estimatedArrival,
+          departureTime: data.departureTime,
           hotel: data.hotel,
           hotelReference: data.hotelReference,
           hotelReservationName: data.hotelReservationName,

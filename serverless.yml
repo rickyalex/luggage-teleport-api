@@ -29,6 +29,7 @@ provider:
     TABLE_NAME5: "Airport"
     TABLE_NAME6: "Hotel"
     TABLE_NAME7: "Airline"
+    TABLE_NAME8: "Users"
     TABLE_INDEX_NAME: email
     LOCATION_ID: ${file(apikeys.js):apikeys.location_id_sandbox}
     SQUARE_ACCESS_TOKEN: ${file(apikeys.js):apikeys.square_access_token_sandbox}
@@ -40,8 +41,6 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME}/index/${self:provider.environment.TABLE_INDEX_NAME}"
     - Effect: Allow
       Action:
@@ -49,8 +48,6 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME2}/index/${self:provider.environment.TABLE_INDEX_NAME}"
     - Effect: Allow
       Action:
@@ -58,8 +55,6 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME3}/index/${self:provider.environment.TABLE_INDEX_NAME}"
     - Effect: Allow
       Action:
@@ -67,36 +62,31 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
         - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME4}/index/${self:provider.environment.TABLE_INDEX_NAME}"
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME5}"
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME6}"
     - Effect: Allow
       Action:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-        - dynamodb:DeleteItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME7}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME8}"
         #  table: ${self:service}-${opt:stage, self:provider.stage}
   #iamRoleStatements:
   # - Effect: Allow
@@ -152,15 +142,6 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME}
-  AirportToHotel-update:
-    handler: handler/AirportToHotel.update
-    events:
-      - http:
-          path: handler/AirportToHotel-update/{id}
-          method: put
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
   AirportToHotel-scan:
     handler: handler/AirportToHotel.scan
     events:
@@ -189,15 +170,6 @@ functions:
       - http:
           path: handler/HotelToAirport-create
           method: post
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
-  HotelToAirport-update:
-    handler: handler/HotelToAirport.update
-    events:
-      - http:
-          path: handler/HotelToAirport-update/{id}
-          method: put
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME2}
@@ -232,15 +204,6 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
-  AirportToAirport-update:
-    handler: handler/AirportToAirport.update
-    events:
-      - http:
-          path: handler/AirportToAirport-update/{id}
-          method: put
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME3}
   AirportToAirport-scan:
     handler: handler/AirportToAirport.scan
     events:
@@ -269,15 +232,6 @@ functions:
       - http:
           path: handler/HotelToHotel-create
           method: post
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
-  HotelToHotel-update:
-    handler: handler/HotelToHotel.update
-    events:
-      - http:
-          path: handler/HotelToHotel-update/{id}
-          method: put
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME4}
@@ -365,6 +319,28 @@ functions:
                url: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME7}
+  Users-scan:
+    handler: handler/Users.scan
+    events:
+      - http:
+          path: handler/Users-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME8}
+  Users-get:
+    handler: handler/Users.get
+    events:
+      - http:
+          path: handler/Users-get/{id}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME8}
 resources:
   Resources:
     AirportToHotelDynamoDbTable:
@@ -551,6 +527,22 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         TableName: ${self:provider.environment.TABLE_NAME7}
+    UsersDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME8}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

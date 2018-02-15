@@ -1,4 +1,52 @@
 {
-  "id": {"S" : "3"},
-  "name": {"S" : "McCarran Intl Airport"}
+    "Airport": [
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "1"},
+                    "name": {"S": "McCarran Airport Terminal 1"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "2"},
+                    "name": {"S": "McCarran Airport Terminal 3"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "3"},
+                    "name": {"S": "San Francisco Airport Terminal 1"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "4"},
+                    "name": {"S": "San Francisco Airport Terminal 2"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "5"},
+                    "name": {"S": "San Francisco Airport Terminal 3"}
+                }
+            }
+        },
+        {
+            "PutRequest": {
+                "Item": {
+                    "id": {"S": "6"},
+                    "name": {"S": "San Francisco Airport International Terminal"}
+                }
+            }
+        }
+    ]
 }
