@@ -194,7 +194,7 @@ module.exports.scan = (event, context, callback) => {
           const response = {
              statusCode: 200,
              body: JSON.stringify({
-               Myresult: data.Items,
+               result: data.Items,
                input: event,
              }),
              headers: { 
