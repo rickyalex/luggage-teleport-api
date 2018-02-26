@@ -60,7 +60,7 @@ module.exports.create = (event, context, callback) => {
             RsvpNameHotelPickup: data.RsvpNameHotelPickup,
             email: data.email,
             PhoneNumber: data.PhoneNumber,
-            status: "Awaiting Payment",
+            status: "Order being processed",
             createdAt: timestamp,
             PaymentWith: data.PaymentWith,
             LuggageQuantity: data.LuggageQuantity,
