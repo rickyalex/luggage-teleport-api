@@ -130,7 +130,7 @@ module.exports.update = (event, context, callback) => {
   const timestamp = new Date().getTime();
   const data = JSON.parse(event.body);
 
-  if (typeof data.text !== 'string' || typeof data.checked !== 'boolean') {
+  if (typeof data.status !== 'string') {
     console.error('Validation Failed');
     callback(null, {
       statusCode: 400,
@@ -152,7 +152,8 @@ module.exports.update = (event, context, callback) => {
       '#status': 'status',
     },
     ExpressionAttributeValues: {
-      ':updatedAt': timestamp,
+        ":updatedAt": timestamp,
+        ":status": data.status
     },
     UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt',
     ReturnValues: 'ALL_NEW',
@@ -167,19 +168,30 @@ module.exports.update = (event, context, callback) => {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin' : '*'
         },
-        body: 'Couldn\'t fetch the todo item.',
+        body: JSON.stringify(error),
       });
       return;
     }
 
+    // const response = {
+    //   statusCode: 200,
+    //   body: JSON.stringify(result.Attributes),
+    //   headers: { 
+    //       'Content-Type': 'application/json',
+    //       'Access-Control-Allow-Origin' : '*' 
+    //     },
+    // };
     const response = {
-      statusCode: 200,
-      body: JSON.stringify(result.Attributes),
-      headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin' : '*' 
-        },
-    };
+             statusCode: 200,
+             body: JSON.stringify({
+               result: data.Items,
+               input: event,
+             }),
+             headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin' : '*'
+            },
+           };
     callback(null, response);
 });
 };

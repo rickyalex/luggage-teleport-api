@@ -151,6 +151,15 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  AirportToHotel-update:
+    handler: handler/AirportToHotel.update
+    events:
+      - http:
+          path: handler/AirportToHotel-update/{id}
+          method: put
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
   AirportToHotel-get:
     handler: handler/AirportToHotel.get
     events:
