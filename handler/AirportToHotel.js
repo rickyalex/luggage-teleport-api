@@ -47,25 +47,24 @@ module.exports.create = (event, context, callback) => {
       const params = {
         TableName: process.env.TABLE_NAME,
         Item: {
-          id: uuid.v1(),
-          BookingId: data.BookingId,
-          airport: data.airport,
-          airline: data.airline,
-          flightNumber: data.flightNumber,
-          pickupDate: data.pickupDate,
-          estimatedArrival: data.estimatedArrival,
-          hotel: data.hotel,
-          hotelReference: data.hotelReference,
-          hotelReservationName: data.hotelReservationName,
-          dropoffDate: data.dropoffDate,
-          status: "Order being processed",
-          createdAt: timestamp,
-          email: data.email,
-          phone: data.phone,
-          PaymentWith: data.PaymentWith,
-          LuggageQuantity: data.LuggageQuantity,
-          TotalCost: data.TotalCost,
-          transaction: resp.body.transaction.id
+            id: uuid.v1(),
+            BookingId: data.BookingId,
+            airport: data.airport,
+            airline: data.airline,
+            flightNumber: data.flightNumber,
+            pickupDate: data.pickupDate,
+            hotel: data.hotel,
+            hotelReference: data.hotelReference,
+            hotelReservationName: data.hotelReservationName,
+            dropoffDate: data.dropoffDate,
+            status: "Order being processed",
+            createdAt: timestamp,
+            email: data.email,
+            phone: data.phone,
+            PaymentWith: data.PaymentWith,
+            LuggageQuantity: data.LuggageQuantity,
+            TotalCost: data.TotalCost,
+            transaction: resp.body.transaction.id
         },
       };
 
@@ -78,7 +77,7 @@ module.exports.create = (event, context, callback) => {
               'Content-Type': 'application/json',
               'Access-Control-Allow-Origin': '*'
             },
-            body: 'Couldn\'t create the booking.',
+            body: JSON.stringify(error),
           });
           return;
         }
@@ -87,7 +86,7 @@ module.exports.create = (event, context, callback) => {
         const msg = {
           to: params.Item.email,
           from: 'no-reply@luggageteleport.com',
-          bcc: 'rickyalex88@gmail.com',
+          bcc: 'max@luggageteleport.com',
           subject: 'Luggage Teleport Receipt',
           text: params.Item.BookingId,
           html: '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame01.png"  width="377" height="auto"/>'+'<br><br>'+
@@ -126,75 +125,68 @@ module.exports.create = (event, context, callback) => {
   });
 };
 
-module.exports.update = (event, context, callback) => {
-  const timestamp = new Date().getTime();
-  const data = JSON.parse(event.body);
+//module.exports.update = (event, context, callback) => {
+  //const timestamp = new Date().getTime();
+  //const data = JSON.parse(event.body);
 
-  if (typeof data.status !== 'string') {
-    console.error('Validation Failed');
-    callback(null, {
-      statusCode: 400,
-      headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin' : '*'
-        },
-      body: 'Couldn\'t update the booking.',
-    });
-    return;
-  }
+  //return JSON.stringify(event);
+  
+  // if (typeof data.status !== 'string') {
+  //   console.error('Validation Failed');
+  //   callback(null, {
+  //     statusCode: 400,
+  //     headers: { 
+  //         'Content-Type': 'application/json',
+  //         'Access-Control-Allow-Origin' : '*'
+  //       },
+  //     body: JSON.stringify(data),
+  //   });
+  //   return;
+  // }
 
-  const params = {
-    TableName: process.env.TABLE_NAME,
-    Key: {
-      id: event.pathParameters.id,
-    },
-    ExpressionAttributeNames: {
-      '#status': 'status',
-    },
-    ExpressionAttributeValues: {
-        ":updatedAt": timestamp,
-        ":status": data.status
-    },
-    UpdateExpression: 'SET #status = :status, updatedAt = :updatedAt',
-    ReturnValues: 'ALL_NEW',
-  };
+  // const params = {
+  //   TableName: process.env.TABLE_NAME,
+  //   Key: {
+  //     "id": event.pathParameters.id,
+  //   },
+  //   UpdateExpression: "SET #status = :status",
+  //   ExpressionAttributeNames: {
+  //     "#status": "status",
+  //   },
+  //   ExpressionAttributeValues: {
+  //     ":status": event.queryStringParameters.status
+  //   },
+  //   ReturnValues: "UPDATED_NEW"
+  // };
 
-  dynamoDb.update(params, (error, result) => {
-    if (error) {
-      console.error(error);
-      callback(null, {
-        statusCode: error.statusCode || 501,
-        headers: { 
-          'Content-Type': 'application/json',
-          'Access-Control-Allow-Origin' : '*'
-        },
-        body: JSON.stringify(error),
-      });
-      return;
-    }
+  // dynamoDb.update(params, function(error, data) {
+  //   if (error) {
+  //     console.error(error);
+  //     callback(null, {
+  //       statusCode: error.statusCode || 501,
+  //       headers: { 
+  //         'Content-Type': 'application/text-plain',
+  //         'Access-Control-Allow-Origin' : '*'
+  //       },
+  //       body: "Error",
+  //     });
+  //     return;
+  //   }
 
-    // const response = {
-    //   statusCode: 200,
-    //   body: JSON.stringify(result.Attributes),
-    //   headers: { 
-    //       'Content-Type': 'application/json',
-    //       'Access-Control-Allow-Origin' : '*' 
-    //     },
-    // };
-    const response = {
-             statusCode: 200,
-             body: JSON.stringify({
-               result: data.Items,
-               input: event,
-             }),
-             headers: { 
-              'Content-Type': 'application/json',
-              'Access-Control-Allow-Origin' : '*'
-            },
-           };
-    callback(null, response);
-});
-};
+  //   const response = {
+  //     statusCode: 200,
+  //     body: JSON.stringify({
+  //       result: data,
+  //       input: event
+  //     }),
+  //     headers: { 
+  //         'Content-Type': 'application/json',
+  //         'Access-Control-Allow-Origin' : '*' 
+  //       },
+  //   };
+  //   callback(null, response);
+  // });
+//};
 
 module.exports.scan = (event, context, callback) => {
 

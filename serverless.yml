@@ -30,6 +30,7 @@ provider:
     TABLE_NAME6: "Hotel"
     TABLE_NAME7: "Airline"
     TABLE_NAME8: "Users"
+    TABLE_NAME9: "Corporate"
     TABLE_INDEX_NAME: email
     LOCATION_ID: ${file(apikeys.js):apikeys.location_id_sandbox}
     SQUARE_ACCESS_TOKEN: ${file(apikeys.js):apikeys.square_access_token_sandbox}
@@ -87,6 +88,13 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME8}"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME9}/index/trackingNumber"
         #  table: ${self:service}-${opt:stage, self:provider.stage}
   #iamRoleStatements:
   # - Effect: Allow
@@ -151,15 +159,19 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME}
-  AirportToHotel-update:
-    handler: handler/AirportToHotel.update
-    events:
-      - http:
-          path: handler/AirportToHotel-update/{id}
-          method: put
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME}
+  # AirportToHotel-update:
+  #   handler: handler/AirportToHotel.update
+  #   events:
+  #     - http:
+  #         path: handler/AirportToHotel-update/{id}
+  #         method: put
+  #         cors: true
+  #         request:
+  #          parameters:
+  #            querystrings:
+  #              url: true
+  #   environment:
+  #     TABLE_NAME: ${self:provider.environment.TABLE_NAME}
   AirportToHotel-get:
     handler: handler/AirportToHotel.get
     events:
@@ -350,6 +362,37 @@ functions:
                url: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME8}
+  Corporate-create:
+    handler: handler/Corporate.create
+    events:
+      - http:
+          path: handler/Corporate-create
+          method: post
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME9}
+  Corporate-scan:
+    handler: handler/Corporate.scan
+    events:
+      - http:
+          path: handler/Corporate-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME9}
+  Corporate-get:
+    handler: handler/Corporate.get
+    events:
+      - http:
+          path: handler/Corporate-get/{trackingNumber}/{sequence}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME9}
 resources:
   Resources:
     AirportToHotelDynamoDbTable:
@@ -552,6 +595,40 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         TableName: ${self:provider.environment.TABLE_NAME8}
+    CorporateDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        - 
+          AttributeName: trackingNumber
+          AttributeType: S
+        KeySchema:
+        -
+          AttributeName: id
+          KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME9}
+        GlobalSecondaryIndexes:
+        - IndexName: trackingNumber
+          KeySchema:
+            - AttributeName: trackingNumber
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
