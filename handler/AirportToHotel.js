@@ -86,11 +86,11 @@ module.exports.create = (event, context, callback) => {
         const msg = {
           to: params.Item.email,
           from: 'no-reply@luggageteleport.com',
-          bcc: 'max@luggageteleport.com',
+          bcc: 'luggageteleport2017@gmail.com',
           subject: 'Luggage Teleport Receipt',
           text: params.Item.BookingId,
           html: '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame01.png"  width="377" height="auto"/>'+'<br><br>'+
-                '<strong>Thank You for booking with us !</strong>'+'<br><br>'+
+                '<strong>Thank you for trusting your luggages with us !</strong>'+'<br><br>'+
                 'Your Booking ID : '+params.Item.BookingId+'<br>'+
                 'Booking : Airport to Hotel<br>'+
                 'Email : '+params.Item.email+'<br>'+
@@ -101,10 +101,12 @@ module.exports.create = (event, context, callback) => {
                 'Pickup Airport : '+params.Item.airport+'<br>'+
                 'Airline : '+params.Item.airline+'<br>'+
                 'Flight Number : '+params.Item.flightNumber+'<br>'+
+                'Pickup Time: '+params.Item.pickupDate+'<br>'+
                 '<strong>Drop Off Point </strong>'+'<br>'+
                 'Dropoff Hotel : '+params.Item.hotel+'<br>'+
                 'Hotel Reference : '+params.Item.hotelReference+'<br>'+
                 'Guest Name: '+params.Item.hotelReservationName+'<br><br>'+
+                'Dropoff Time: '+params.Item.dropoffDate+'<br>'+
                 '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame02.png"  width="377" height="auto"/>'
         };
         sgMail.send(msg);

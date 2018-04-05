@@ -51,15 +51,14 @@ module.exports.create = (event, context, callback) => {
             BookingId: data.BookingId,
             HotelDropoff: data.HotelDropoff,
             HotelDropoffBookingRef: data.HotelDropoffBookingRef,
-            HotelDropoffDate: data.HotelDropoffDate,
+            HotelDropoffDate: data.DropoffDate,
             HotelPickup: data.HotelPickup,
             HotelPickupBookingRef: data.HotelPickupBookingRef,
-            HotelPickupDate: data.HotelPickupDate,
-            OvernightStorage: data.OvernightStorage,
+            HotelPickupDate: data.PickupDate,
             RsvpNameHotelDropoff: data.RsvpNameHotelDropoff,
             RsvpNameHotelPickup: data.RsvpNameHotelPickup,
             email: data.email,
-            PhoneNumber: data.PhoneNumber,
+            phone: data.phone,
             status: "Order being processed",
             createdAt: timestamp,
             PaymentWith: data.PaymentWith,
@@ -87,13 +86,13 @@ module.exports.create = (event, context, callback) => {
         const msg = {
           to: params.Item.email,
           from: 'no-reply@luggageteleport.com',
-          bcc: 'max@luggageteleport.com',
+          bcc: 'luggageteleport2017@gmail.com',
           subject: 'Luggage Teleport Receipt',
           text: params.Item.BookingId,
           html: '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame01.png"  width="377" height="auto"/>'+'<br><br>'+
                 '<strong>Thank You for booking with us !</strong>'+'<br><br>'+
                 'Your Booking ID : '+params.Item.BookingId+'<br>'+
-                'Booking : Airport to Hotel<br>'+
+                'Booking : Hotel to Hotel<br>'+
                 'Email : '+params.Item.email+'<br>'+
                 'Phone Number : '+params.Item.phone+'<br>'+
                 'Number of bags : '+params.Item.LuggageQuantity+'<br>'+
