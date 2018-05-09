@@ -1,7 +1,6 @@
 const AWS = require('aws-sdk'); // eslint-disable-line import/no-extraneous-dependencies
-const uuid = require('node-uuid');
-const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
 
 module.exports.create = (event, context, callback) => {
   const timestamp = new Date().getTime();
@@ -10,12 +9,12 @@ module.exports.create = (event, context, callback) => {
   var locationId = process.env.LOCATION_ID;
 
       const params = {
-        TableName: process.env.TABLE_NAME8,
+        TableName: process.env.TABLE_NAME10,
         Item: {
-            id: uuid.v1(),
-            img: data.img,
-            email: data.email,
-            createdAt: timestamp
+            id: data.id,
+            PercentageOff: data.PercentageOff,
+            DollarsOff: data.DollarsOff,
+            NumberofUse: data.NumberofUse
         },
       };
 
@@ -28,7 +27,7 @@ module.exports.create = (event, context, callback) => {
               'Content-Type': 'application/json',
               'Access-Control-Allow-Origin': '*'
             },
-            body: 'Couldn\'t create the User',
+            body: 'Couldn\'t create the promo code.',
           });
           return;
         }
@@ -45,42 +44,40 @@ module.exports.create = (event, context, callback) => {
       });
 };
 
-// module.exports.scan = (event, context, callback) => {
+module.exports.scan = (event, context, callback) => {
 
-//   var params = {
-//       TableName : process.env.TABLE_NAME8,
-//     };
-//     dynamoDb.scan(params, function(err, data){
-//       if(err){
-//           callback(err, null);
-//       }else{
-//           const response = {
-//              statusCode: 200,
-//              body: JSON.stringify({
-//                Myresult: data.Items,
-//                input: event,
-//              }),
-//              headers: { 
-//               'Content-Type': 'application/json',
-//               'Access-Control-Allow-Origin' : '*'
-//             },
-//            };
-//           callback(null, response);
-//       }
-//   });
-// };
+  var params = {
+      TableName : process.env.TABLE_NAME10,
+    };
+    dynamoDb.scan(params, function(err, data){
+      if(err){
+          callback(err, null);
+      }else{
+          const response = {
+             statusCode: 200,
+             body: JSON.stringify({
+               Myresult: data.Items,
+               input: event,
+             }),
+             headers: { 
+              'Content-Type': 'application/json',
+              'Access-Control-Allow-Origin' : '*'
+            },
+           };
+          callback(null, response);
+      }
+  });
+};
 
 module.exports.get = (event, context, callback) => {
 
   var params = {
-    TableName: process.env.TABLE_NAME8,
-    IndexName : 'email',
-    KeyConditionExpression: "email = :e",
-    ExpressionAttributeValues: {
-        ":e": event.pathParameters.id
+    TableName: process.env.TABLE_NAME10,
+    Key: {
+      id: event.pathParameters.id,
     }
   };
-    dynamoDb.query(params, function(err, data){
+    dynamoDb.get(params, (err, data) => {
       if (err) {
         console.error(err);
         callback(null, {
@@ -94,7 +91,7 @@ module.exports.get = (event, context, callback) => {
           const response = {
              statusCode: 200,
              body: JSON.stringify({
-               result: data.Items,
+               result: data.Item,
                input: event,
              }),
              headers: { 

@@ -16,6 +16,8 @@ service: luggage-teleport-api
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
 # frameworkVersion: "=X.X.X"
+custom:
+  bucket: "luggageteleport.net"
 
 provider:
   name: aws
@@ -27,10 +29,11 @@ provider:
     TABLE_NAME3: "AirportToAirport"
     TABLE_NAME4: "HotelToHotel"
     TABLE_NAME5: "Airport"
-    TABLE_NAME6: "Hotel"
+    # TABLE_NAME6: "Hotel"
     TABLE_NAME7: "Airline"
     TABLE_NAME8: "Users"
     TABLE_NAME9: "Corporate"
+    TABLE_NAME10: "PromoCode"
     TABLE_INDEX_NAME: email
     LOCATION_ID: ${file(apikeys.js):apikeys.location_id_sandbox}
     SQUARE_ACCESS_TOKEN: ${file(apikeys.js):apikeys.square_access_token_sandbox}
@@ -70,12 +73,12 @@ provider:
         - dynamodb:Scan
         - dynamodb:GetItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME5}"
-    - Effect: Allow
-      Action:
-        - dynamodb:Query
-        - dynamodb:Scan
-        - dynamodb:GetItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME6}"
+    # - Effect: Allow
+    #   Action:
+    #     - dynamodb:Query
+    #     - dynamodb:Scan
+    #     - dynamodb:GetItem
+    #   Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME6}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -87,7 +90,8 @@ provider:
         - dynamodb:Query
         - dynamodb:Scan
         - dynamodb:GetItem
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME8}"
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME8}/index/${self:provider.environment.TABLE_INDEX_NAME}"
     - Effect: Allow
       Action:
         - dynamodb:Query
@@ -95,6 +99,17 @@ provider:
         - dynamodb:GetItem
         - dynamodb:PutItem
       Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME9}/index/trackingNumber"
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.TABLE_NAME10}/index/id"
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*"
         #  table: ${self:service}-${opt:stage, self:provider.stage}
   #iamRoleStatements:
   # - Effect: Allow
@@ -147,7 +162,7 @@ functions:
       - http:
           path: handler/AirportToHotel-create
           method: post
-          cors: true
+          #cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME}
   AirportToHotel-scan:
@@ -296,28 +311,28 @@ functions:
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME5}
-  Hotel-scan:
-    handler: handler/Hotel.scan
-    events:
-      - http:
-          path: handler/Hotel-scan
-          method: get
-          cors: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
-  Hotel-get:
-    handler: handler/Hotel.get
-    events:
-      - http:
-          path: handler/Hotel-get/{id}
-          method: get
-          cors: true
-          request:
-           parameters:
-             querystrings:
-               url: true
-    environment:
-      TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
+  # Hotel-scan:
+  #   handler: handler/Hotel.scan
+  #   events:
+  #     - http:
+  #         path: handler/Hotel-scan
+  #         method: get
+  #         cors: true
+  #   environment:
+  #     TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
+  # Hotel-get:
+  #   handler: handler/Hotel.get
+  #   events:
+  #     - http:
+  #         path: handler/Hotel-get/{id}
+  #         method: get
+  #         cors: true
+  #         request:
+  #          parameters:
+  #            querystrings:
+  #              url: true
+  #   environment:
+  #     TABLE_NAME: ${self:provider.environment.TABLE_NAME6}
   Airline-scan:
     handler: handler/Airline.scan
     events:
@@ -340,15 +355,24 @@ functions:
                url: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME7}
-  Users-scan:
-    handler: handler/Users.scan
+  Users-create:
+    handler: handler/Users.create
     events:
       - http:
-          path: handler/Users-scan
-          method: get
+          path: handler/Users-create
+          method: post
           cors: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME8}
+  # Users-scan:
+  #   handler: handler/Users.scan
+  #   events:
+  #     - http:
+  #         path: handler/Users-scan
+  #         method: get
+  #         cors: true
+  #   environment:
+  #     TABLE_NAME: ${self:provider.environment.TABLE_NAME8}
   Users-get:
     handler: handler/Users.get
     events:
@@ -393,6 +417,41 @@ functions:
                url: true
     environment:
       TABLE_NAME: ${self:provider.environment.TABLE_NAME9}
+  PromoCode-create:
+    handler: handler/PromoCode.create
+    events:
+      - http:
+          path: handler/PromoCode-create
+          method: post
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME10}
+  PromoCode-scan:
+    handler: handler/PromoCode.scan
+    events:
+      - http:
+          path: handler/PromoCode-scan
+          method: get
+          cors: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME10}
+  PromoCode-get:
+    handler: handler/PromoCode.get
+    events:
+      - http:
+          path: handler/PromoCode-get/{id}
+          method: get
+          cors: true
+          request:
+           parameters:
+             querystrings:
+               url: true
+    environment:
+      TABLE_NAME: ${self:provider.environment.TABLE_NAME10}
+  UploadImage:
+    handler: handler/UploadImage.save
+    environment:
+      BUCKET: ${self:custom.bucket}
 resources:
   Resources:
     AirportToHotelDynamoDbTable:
@@ -547,22 +606,22 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         TableName: ${self:provider.environment.TABLE_NAME5}
-    HotelDynamoDbTable:
-      Type: 'AWS::DynamoDB::Table'
-      DeletionPolicy: Retain
-      Properties:
-        AttributeDefinitions:
-        - 
-          AttributeName: id
-          AttributeType: S
-        KeySchema:
-          -
-            AttributeName: id
-            KeyType: HASH
-        ProvisionedThroughput:
-          ReadCapacityUnits: 5
-          WriteCapacityUnits: 5
-        TableName: ${self:provider.environment.TABLE_NAME6}
+    # HotelDynamoDbTable:
+    #   Type: 'AWS::DynamoDB::Table'
+    #   DeletionPolicy: Retain
+    #   Properties:
+    #     AttributeDefinitions:
+    #     - 
+    #       AttributeName: id
+    #       AttributeType: S
+    #     KeySchema:
+    #       -
+    #         AttributeName: id
+    #         KeyType: HASH
+    #     ProvisionedThroughput:
+    #       ReadCapacityUnits: 5
+    #       WriteCapacityUnits: 5
+    #     TableName: ${self:provider.environment.TABLE_NAME6}
     AirlineDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
@@ -587,6 +646,9 @@ resources:
         - 
           AttributeName: id
           AttributeType: S
+        - 
+          AttributeName: email
+          AttributeType: S
         KeySchema:
           -
             AttributeName: id
@@ -595,6 +657,21 @@ resources:
           ReadCapacityUnits: 5
           WriteCapacityUnits: 5
         TableName: ${self:provider.environment.TABLE_NAME8}
+        GlobalSecondaryIndexes:
+        - IndexName: email
+          KeySchema:
+            - AttributeName: email
+              KeyType: HASH
+          # Projection:
+          #   NonKeyAttributes:
+          #     - user_id
+          #     - user_organization_id
+          #   ProjectionType: INCLUDE
+          Projection:
+              ProjectionType: "ALL"
+          ProvisionedThroughput:
+            ReadCapacityUnits: 1
+            WriteCapacityUnits: 1
     CorporateDynamoDbTable:
       Type: 'AWS::DynamoDB::Table'
       DeletionPolicy: Retain
@@ -629,6 +706,22 @@ resources:
           ProvisionedThroughput:
             ReadCapacityUnits: 1
             WriteCapacityUnits: 1
+    PromoCodeDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+        - 
+          AttributeName: id
+          AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 5
+          WriteCapacityUnits: 5
+        TableName: ${self:provider.environment.TABLE_NAME10}
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events

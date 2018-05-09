@@ -58,6 +58,7 @@ module.exports.create = (event, context, callback) => {
             hotelReservationName: data.hotelReservationName,
             dropoffDate: data.dropoffDate,
             status: "Order being processed",
+            bookingType: 'ATH',
             createdAt: timestamp,
             email: data.email,
             phone: data.phone,

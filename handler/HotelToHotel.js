@@ -51,12 +51,13 @@ module.exports.create = (event, context, callback) => {
             BookingId: data.BookingId,
             HotelDropoff: data.HotelDropoff,
             HotelDropoffBookingRef: data.HotelDropoffBookingRef,
-            HotelDropoffDate: data.DropoffDate,
+            dropoffDate: data.dropoffDate,
             HotelPickup: data.HotelPickup,
             HotelPickupBookingRef: data.HotelPickupBookingRef,
-            HotelPickupDate: data.PickupDate,
+            pickupDate: data.pickupDate,
             RsvpNameHotelDropoff: data.RsvpNameHotelDropoff,
             RsvpNameHotelPickup: data.RsvpNameHotelPickup,
+            bookingType: 'HTH',
             email: data.email,
             phone: data.phone,
             status: "Order being processed",
@@ -100,11 +101,11 @@ module.exports.create = (event, context, callback) => {
                 '<strong>Pick Up Point </strong>'+'<br>'+
                 'Hotel : '+params.Item.HotelPickup+'<br>'+
                 'Hotel Reference : '+params.Item.HotelPickupBookingRef+'<br>'+
-                'Pick Up Date: '+params.Item.HotelPickupDate+'<br>'+
+                'Pick Up Date: '+params.Item.pickupDate+'<br>'+
                 '<strong>Drop Off Point </strong>'+'<br>'+
                 'Hotel : '+params.Item.HotelDropoff+'<br>'+
                 'Hotel Reference : '+params.Item.HotelDropoffBookingRef+'<br>'+
-                'Drop Off Date : '+params.Item.HotelDropoffDate+'<br>'+
+                'Drop Off Date : '+params.Item.dropoffDate+'<br>'+
                 '<img src="https://s3-us-west-1.amazonaws.com/luggageteleport.net/img/frame02.png"  width="377" height="auto"/>'
         };
         sgMail.send(msg);
